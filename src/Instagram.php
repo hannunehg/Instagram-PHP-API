@@ -472,7 +472,7 @@ class Instagram
      */
     public function getLocation($id)
     {
-        return $this->_makeCall('locations/' . $id, false);
+        return $this->_makeCall('locations/' . $id, true);
     }
 
     /**
@@ -484,7 +484,7 @@ class Instagram
      */
     public function getLocationMedia($id)
     {
-        return $this->_makeCall('locations/' . $id . '/media/recent', false);
+        return $this->_makeCall('locations/' . $id . '/media/recent', true);
     }
 
     /**
@@ -602,7 +602,7 @@ class Instagram
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
 		// geo
-		echo $apiCall;
+		// echo $apiCall;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);

@@ -7,9 +7,11 @@
  * @author Christian Metz
  * @since 01.10.2013
  */
+ session_start();
 require '../src/Instagram.php';
-
+require '../src/Endpoints.php';
 use MetzWeb\Instagram\Instagram;
+use MetzWeb\Instagram\Endpoints;
 
 // initialize class
 $instagram = new Instagram(array(
@@ -19,28 +21,46 @@ $instagram = new Instagram(array(
     //'apiCallback' => 'https://api.instagram.com/v1/locations/search?client_id=e9ee415633ad4c93a903013337847450&lat=26.8206&lng=30.8025&distance=5000' // must point to success.php
 ));
 
-// receive OAuth code parameter
-$code = $_GET['code'];
 
 // check whether the user has granted access
-if (isset($code)) {
+if (isset($_GET['code'])) {
+	
+	// receive OAuth code parameter
+    $code = $_GET['code'];
     // receive OAuth token object
     $data = $instagram->getOAuthToken($code);
     $username = $data->user->username;
     // store user access token
     $instagram->setAccessToken($data);
-    // now you have access to all authenticated user methods
-    //$result = $instagram->getUserMedia();
-	//$result = $instagram->searchMedia(26.8206, 30.8025, 5000);
-	$result = $instagram->searchLocation(26.8206, 30.8025, 5000);
-	
-	//26.8206° N, 30.8025° E
+	$accessToken = $instagram->getAccessToken();
+	if ($accessToken != ''){
+		
+		$_SESSION['InstagramAccessToken'] = $accessToken;
+	}
 } else {
     // check whether an error occurred
     if (isset($_GET['error'])) {
         echo 'An error occurred: ' . $_GET['error_description'];
     }
+	$instagram->setAccessToken($_SESSION['InstagramAccessToken']); 
 }
+
+$endpoints = new Endpoints();
+if(isset($_GET['loc_id'])){
+	
+    $endpoints->set_result($instagram->getLocation($_GET['loc_id']));
+	
+}
+
+if(isset($_GET['lat']) && isset($_GET['lon']) ){
+
+    $endpoints->set_result($instagram->searchLocation($_GET['lat'], $_GET['lon'], 5000));
+}
+
+
+  // now you have access to all authenticated user methods
+    //$result = $instagram->getUserMedia();
+	//$result = $instagram->searchMedia(26.8206, 30.8025, 5000);
 
 ?>
 <!DOCTYPE html>
@@ -48,7 +68,7 @@ if (isset($code)) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram - photo stream</title>
+    <title>Instagram - trending</title>
     <link href="https://vjs.zencdn.net/4.2/video-js.css" rel="stylesheet">
     <link href="assets/style.css" rel="stylesheet">
     <script src="https://vjs.zencdn.net/4.2/video.js"></script>
@@ -58,52 +78,43 @@ if (isset($code)) {
     <header class="clearfix">
         <img src="assets/instagram.png" alt="Instagram logo">
 
-        <h1>Instagram photos <span>taken by <?php echo $data->user->username ?></span></h1>
+        <h1>Instagram photos </h1>
     </header>
     <div class="main">
+	
+		<form action="<?php echo $_SERVER['PHP_SELF']?>" method="get">
+			<p>
+			Lon: <input type="text" name="lon">
+			Lat: <input type="text" name="lat">
+			<input type="submit">
+			<p>
+		</form>
+		<form action="<?php echo $_SERVER['PHP_SELF']?>" method="get">
+			<p>
+			Location Id: <input type="text" name="loc_id">
+			<input type="submit">
+			<p>
+		</form>
         <ul class="grid">
             <?php
-			if(is_null($result)){
+			if(!isset($endpoints->result) || is_null($endpoints->result)){
 				echo "no result";
 				exit;
-				
-			}else {
-				//echo "result:".print_r($result);
-				echo count($data) > 0;
-				
-				
 			}
-            // display all user likes
-            foreach ($result as $media) {
-                
-				print_r($media);
-				// $content = '<li>';
-                // // output media
-                // if ($media->type === 'video') {
-                    // // video
-                    // $poster = $media->images->low_resolution->url;
-                    // $source = $media->videos->standard_resolution->url;
-                    // $content .= "<video class=\"media video-js vjs-default-skin\" width=\"250\" height=\"250\" poster=\"{$poster}\"
-                           // data-setup='{\"controls\":true, \"preload\": \"auto\"}'>
-                             // <source src=\"{$source}\" type=\"video/mp4\" />
-                           // </video>";
-                // } else {
-                    // // image
-                    // $image = $media->images->low_resolution->url;
-                    // $content .= "<img class=\"media\" src=\"{$image}\"/>";
-                // }
-                // // create meta section
-                // $avatar = $media->user->profile_picture;
-                // $username = $media->user->username;
-                // //$comment = $media->caption->text;
-                // $content .= "<div class=\"content\">
-                           // <div class=\"avatar\" style=\"background-image: url({$avatar})\"></div>
-                           // <p>{$username}</p>
-                           
-                         // </div>";
-                // // output media
-                // echo $content . '</li>';
-            }
+			
+			//echo "result:".print_r($result);
+			//echo count($data) > 0;
+			//echo count($result->$data);
+			//print_r($result->data);
+			//print_r($result->$data);
+			
+			if(isset($_GET['loc_id'])){
+				
+				$endpoints->display_getLocation_results();
+			}
+			if(isset($_GET['lat']) && isset($_GET['lon']) ){
+				$endpoints->display_searchLocation_results();
+			}
             ?>
         </ul>
         <!-- GitHub project -->

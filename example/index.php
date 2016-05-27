@@ -14,6 +14,7 @@ $instagram = new Instagram(array(
 
 // create login URL
 $loginUrl = $instagram->getLoginUrl();
+echo  $loginUrl;
 
 ?>
 <!DOCTYPE html>
