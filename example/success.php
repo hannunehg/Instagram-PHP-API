@@ -30,9 +30,9 @@ if (isset($code)) {
     // store user access token
     $instagram->setAccessToken($data);
     // now you have access to all authenticated user methods
-    $result = $instagram->getUserMedia();
+    //$result = $instagram->getUserMedia();
 	//$result = $instagram->searchMedia(26.8206, 30.8025, 5000);
-	//$result = $instagram->searchLocation(26.8206, 30.8025, 5000);
+	$result = $instagram->searchLocation(26.8206, 30.8025, 5000);
 	
 	//26.8206° N, 30.8025° E
 } else {
