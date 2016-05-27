@@ -4,7 +4,7 @@ require '../src/Instagram.php';
 
 use MetzWeb\Instagram\Instagram;
 
-$instagram = new Instagram('YOUR_APP_KEY');
+$instagram = new Instagram('e9ee415633ad4c93a903013337847450');
 
 $result = $instagram->getPopularMedia();
 

@@ -601,7 +601,8 @@ class Instagram
         if ($this->_signedheader) {
             $apiCall .= (strstr($apiCall, '?') ? '&' : '?') . 'sig=' . $this->_signHeader($function, $authMethod, $params);
         }
-
+		// geo
+		echo $apiCall;
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $apiCall);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headerData);
@@ -620,7 +621,7 @@ class Instagram
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
                 break;
         }
-
+		
         $jsonData = curl_exec($ch);
         // split header from JSON data
         // and assign each to a variable
@@ -630,7 +631,7 @@ class Instagram
         $headers = $this->processHeaders($headerContent);
 
         // get the 'X-Ratelimit-Remaining' header value
-        $this->_xRateLimitRemaining = $headers['X-Ratelimit-Remaining'];
+        //$this->_xRateLimitRemaining = $headers['X-Ratelimit-Remaining'];
 
         if (!$jsonData) {
             throw new InstagramException('Error: _makeCall() - cURL error: ' . curl_error($ch));

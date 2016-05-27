@@ -13,9 +13,10 @@ use MetzWeb\Instagram\Instagram;
 
 // initialize class
 $instagram = new Instagram(array(
-    'apiKey' => 'YOUR_APP_KEY',
-    'apiSecret' => 'YOUR_APP_SECRET',
-    'apiCallback' => 'YOUR_APP_CALLBACK' // must point to success.php
+    'apiKey' => 'e9ee415633ad4c93a903013337847450',
+    'apiSecret' => '4e3118742c3d422392d07bda3318d2a8',
+     'apiCallback' => 'http://localhost/instagram/example/success.php' // must point to success.php
+    //'apiCallback' => 'https://api.instagram.com/v1/locations/search?client_id=e9ee415633ad4c93a903013337847450&lat=26.8206&lng=30.8025&distance=5000' // must point to success.php
 ));
 
 // receive OAuth code parameter
@@ -30,6 +31,10 @@ if (isset($code)) {
     $instagram->setAccessToken($data);
     // now you have access to all authenticated user methods
     $result = $instagram->getUserMedia();
+	//$result = $instagram->searchMedia(26.8206, 30.8025, 5000);
+	//$result = $instagram->searchLocation(26.8206, 30.8025, 5000);
+	
+	//26.8206° N, 30.8025° E
 } else {
     // check whether an error occurred
     if (isset($_GET['error'])) {
@@ -58,34 +63,46 @@ if (isset($code)) {
     <div class="main">
         <ul class="grid">
             <?php
+			if(is_null($result)){
+				echo "no result";
+				exit;
+				
+			}else {
+				//echo "result:".print_r($result);
+				echo count($data) > 0;
+				
+				
+			}
             // display all user likes
-            foreach ($result->data as $media) {
-                $content = '<li>';
-                // output media
-                if ($media->type === 'video') {
-                    // video
-                    $poster = $media->images->low_resolution->url;
-                    $source = $media->videos->standard_resolution->url;
-                    $content .= "<video class=\"media video-js vjs-default-skin\" width=\"250\" height=\"250\" poster=\"{$poster}\"
-                           data-setup='{\"controls\":true, \"preload\": \"auto\"}'>
-                             <source src=\"{$source}\" type=\"video/mp4\" />
-                           </video>";
-                } else {
-                    // image
-                    $image = $media->images->low_resolution->url;
-                    $content .= "<img class=\"media\" src=\"{$image}\"/>";
-                }
-                // create meta section
-                $avatar = $media->user->profile_picture;
-                $username = $media->user->username;
-                $comment = $media->caption->text;
-                $content .= "<div class=\"content\">
-                           <div class=\"avatar\" style=\"background-image: url({$avatar})\"></div>
-                           <p>{$username}</p>
-                           <div class=\"comment\">{$comment}</div>
-                         </div>";
-                // output media
-                echo $content . '</li>';
+            foreach ($result as $media) {
+                
+				print_r($media);
+				// $content = '<li>';
+                // // output media
+                // if ($media->type === 'video') {
+                    // // video
+                    // $poster = $media->images->low_resolution->url;
+                    // $source = $media->videos->standard_resolution->url;
+                    // $content .= "<video class=\"media video-js vjs-default-skin\" width=\"250\" height=\"250\" poster=\"{$poster}\"
+                           // data-setup='{\"controls\":true, \"preload\": \"auto\"}'>
+                             // <source src=\"{$source}\" type=\"video/mp4\" />
+                           // </video>";
+                // } else {
+                    // // image
+                    // $image = $media->images->low_resolution->url;
+                    // $content .= "<img class=\"media\" src=\"{$image}\"/>";
+                // }
+                // // create meta section
+                // $avatar = $media->user->profile_picture;
+                // $username = $media->user->username;
+                // //$comment = $media->caption->text;
+                // $content .= "<div class=\"content\">
+                           // <div class=\"avatar\" style=\"background-image: url({$avatar})\"></div>
+                           // <p>{$username}</p>
+                           
+                         // </div>";
+                // // output media
+                // echo $content . '</li>';
             }
             ?>
         </ul>

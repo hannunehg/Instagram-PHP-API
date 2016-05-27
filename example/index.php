@@ -6,9 +6,10 @@ use MetzWeb\Instagram\Instagram;
 
 // initialize class
 $instagram = new Instagram(array(
-    'apiKey' => 'YOUR_APP_KEY',
-    'apiSecret' => 'YOUR_APP_SECRET',
-    'apiCallback' => 'YOUR_APP_CALLBACK' // must point to success.php
+    'apiKey' => 'e9ee415633ad4c93a903013337847450',
+    'apiSecret' => '4e3118742c3d422392d07bda3318d2a8',
+    'apiCallback' => 'http://localhost/instagram/example/success.php' // must point to success.php
+    //'apiCallback' => 'https://api.instagram.com/v1/locations/search?client_id=e9ee415633ad4c93a903013337847450&lat=26.8206&lng=30.8025&distance=5000' // must point to success.php
 ));
 
 // create login URL
